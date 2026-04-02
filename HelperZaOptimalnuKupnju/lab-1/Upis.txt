@@ -1,0 +1,31 @@
+Store - Id:1, Name: Konzum Kaptol, Brand: Konzum, Address: Ilica 1, City: Zagreb, Country: HR, OpeningHours: 07:00-21:00
+Store - Id:2, Name: Lidl Centar, Brand: Lidl, Address: Trg 5, City: Split, Country: HR, OpeningHours: 07:00-22:00
+Store - Id:3, Name: Spar Rijeka, Brand: Spar, Address: Korzo 10, City: Rijeka, Country: HR, OpeningHours: 08:00-20:00
+
+User - Id:1, FirstName: Ivan, LastName: Horvat, Email: ivan.horvat@example.com, Role: Buyer, Phone: +38591234567, RegisteredAt: 2024-01-15, IsActive: True
+User - Id:2, FirstName: Ana, LastName: Ivić, Email: ana.ivic@example.com, Role: Supplier, Phone: +38591234568, RegisteredAt: 2023-11-03, IsActive: True
+User - Id:3, FirstName: Marko, LastName: Kovač, Email: marko.kovac@example.com, Role: Admin, Phone: +38591234569, RegisteredAt: 2022-06-20, IsActive: True
+
+Supplier - Id:1, Name: AgroPlus, ContactPerson: Petar Perić, Email: petar@agroplus.hr, Phone: +38512345678, TaxId: HR12345678901, Address: Poljoprivredna 1, Zagreb
+Supplier - Id:2, Name: FreshFish, ContactPerson: Luka Marin, Email: luka@freshfish.hr, Phone: +38512345679, TaxId: HR10987654321, Address: Riva 2, Split
+Supplier - Id:3, Name: DairyLand, ContactPerson: Maja Babić, Email: maja@dairyland.hr, Phone: +38512345670, TaxId: HR11223344556, Address: Mljekarska 3, Varaždin
+
+Product - Id:1, SupplierId:1, Name: Jaja XL, Description: Svježa kokošja jaja, UnitPrice: 1.50
+Product - Id:2, SupplierId:2, Name: Losos file, Description: Svježi file lososa 200g, UnitPrice: 45.00
+Product - Id:3, SupplierId:3, Name: Mlijeko 1L, Description: Pasirano mlijeko 1L, UnitPrice: 6.99
+
+Category - Id:1, Name: Prehrana, Description: Namirnice i prehrambeni proizvodi
+Category - Id:2, Name: Meso i riba, Description: Svježe i smrznuto meso
+Category - Id:3, Name: Pića, Description: Bezalkoholna i alkoholna pića
+
+Order - Id:1, BuyerId:1, SupplierId:1, CreatedAt: 2026-03-10, Status: Pending, TotalAmount: 15.00
+Order - Id:2, BuyerId:2, SupplierId:3, CreatedAt: 2026-03-15, Status: Confirmed, TotalAmount: 69.90
+Order - Id:3, BuyerId:1, SupplierId:2, CreatedAt: 2026-03-20, Status: Shipped, TotalAmount: 90.00
+
+OrderItem - Id:1, OrderId:1, ProductId:1, Quantity:10, UnitPrice:1.50
+OrderItem - Id:2, OrderId:2, ProductId:3, Quantity:10, UnitPrice:6.99
+OrderItem - Id:3, OrderId:3, ProductId:2, Quantity:2, UnitPrice:45.00
+
+Tender - Id:1, Title: Nabava mlijeka, Description: Traži se ponuda za isporuku mlijeka, CreatedById:3, Deadline: 2026-05-01
+Tender - Id:2, Title: Nabava ribe, Description: Ponude za svježu ribu, CreatedById:2, Deadline: 2026-05-15
+Tender - Id:3, Title: Nabava povrća, Description: Ponude za razno povrće, CreatedById:1, Deadline: 2026-04-30
