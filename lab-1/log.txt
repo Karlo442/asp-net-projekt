@@ -3,3 +3,4 @@ Log test
 2026-04-02  - Dodana klasa Store; Build uspješan; Promjene nisu commitane.
 2026-04-02  - Kreirana Upis.txt s primjerima po 3 objekta za svaku klasu; Nije commitano.
 2026-04-02  - Premješten Upis.txt u lab-1 folder; Izvorna kopija obrisana iz Models.
+// ručni upis - AI Agent napravio je i LINQ upite, ali ih nije automatski zapisao u logger, kako sam prekinu session te ga kasnije ponovo upalio
