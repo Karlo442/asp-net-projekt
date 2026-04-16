@@ -1,0 +1,39 @@
+@model IEnumerable<HelperZaOptimalnuKupnju.Models.User>
+@{
+    ViewData["Title"] = "Users";
+}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Entity list</p>
+        <h1>Users</h1>
+    </div>
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span>Users</span>
+    </nav>
+</div>
+<div class="entity-card">
+    <table class="entity-table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Registered</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td><a asp-action="Details" asp-route-id="@user.Id">@user.FirstName @user.LastName</a></td>
+                    <td>@user.Email</td>
+                    <td>@user.Role</td>
+                    <td>@user.RegisteredAt.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,39 @@
+@model HelperZaOptimalnuKupnju.Models.OrderItem
+@{
+    ViewData["Title"] = "Order Item Details";
+}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Details</p>
+        <h1>Order Item #@Model.Id</h1>
+    </div>
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <a asp-controller="OrderItems" asp-action="Index">Order Items</a>
+        <span>Details</span>
+    </nav>
+</div>
+<div class="detail-card">
+    <div class="detail-grid">
+        <div>
+            <h3>Product</h3>
+            <p><a asp-controller="Products" asp-action="Details" asp-route-id="@Model.ProductId">@Model.Product.Name</a></p>
+        </div>
+        <div>
+            <h3>Order</h3>
+            <p><a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.OrderId">Order #@Model.OrderId</a></p>
+        </div>
+        <div>
+            <h3>Quantity</h3>
+            <p>@Model.Quantity</p>
+        </div>
+        <div>
+            <h3>Unit Price</h3>
+            <p>@Model.UnitPrice:C</p>
+        </div>
+        <div>
+            <h3>Subtotal</h3>
+            <p><strong>@(string.Format("{0:C}", Model.Quantity * Model.UnitPrice))</strong></p>
+        </div>
+    </div>
+</div>

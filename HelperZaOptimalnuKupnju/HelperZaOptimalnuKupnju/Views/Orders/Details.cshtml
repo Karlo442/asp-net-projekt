@@ -1,0 +1,52 @@
+@model HelperZaOptimalnuKupnju.Models.Order
+@{
+    ViewData["Title"] = "Order Details";
+}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Details</p>
+        <h1>Order #@Model.Id</h1>
+    </div>
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <a asp-controller="Orders" asp-action="Index">Orders</a>
+        <span>Details</span>
+    </nav>
+</div>
+<div class="detail-card">
+    <div class="detail-grid">
+        <div>
+            <h3>Buyer</h3>
+            <p>@Model.Buyer.FirstName @Model.Buyer.LastName</p>
+            <p>@Model.Buyer.Email</p>
+        </div>
+        <div>
+            <h3>Status</h3>
+            <p>@Model.Status</p>
+        </div>
+        <div>
+            <h3>Created</h3>
+            <p>@Model.CreatedAt:yyyy-MM-dd</p>
+        </div>
+        <div>
+            <h3>Expected delivery</h3>
+            <p>@Model.ExpectedDeliveryDateTime:yyyy-MM-dd</p>
+        </div>
+        <div>
+            <h3>Total</h3>
+            <p><strong>@Model.TotalAmount:C</strong></p>
+        </div>
+    </div>
+    @if (Model.Items != null && Model.Items.Any())
+    {
+        <section class="section-card">
+            <h2>Items</h2>
+            <ul class="detail-list">
+                @foreach (var item in Model.Items)
+                {
+                    <li><a asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId">@item.Product.Name</a> — @item.Quantity × @item.UnitPrice:C</li>
+                }
+            </ul>
+        </section>
+    }
+</div>

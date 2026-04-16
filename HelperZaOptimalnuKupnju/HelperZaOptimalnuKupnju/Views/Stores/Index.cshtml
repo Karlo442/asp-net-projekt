@@ -1,0 +1,25 @@
+@model IEnumerable<HelperZaOptimalnuKupnju.Models.Store>
+@{
+    ViewData["Title"] = "Stores";
+}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Entity list</p>
+        <h1>Stores</h1>
+    </div>
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span>Stores</span>
+    </nav>
+</div>
+<div class="card-grid">
+    @foreach (var store in Model)
+    {
+        <article class="entity-card small-card">
+            <h3><a asp-action="Details" asp-route-id="@store.Id">@store.Name</a></h3>
+            <p class="muted">@store.Brand • @store.City</p>
+            <p>@store.Address</p>
+            <p><strong>Hours:</strong> @store.OpeningHours</p>
+        </article>
+    }
+</div>

@@ -1,0 +1,27 @@
+@model HelperZaOptimalnuKupnju.Models.Product
+@{
+    ViewData["Title"] = "Product Details";
+}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Details</p>
+        <h1>@Model.Name</h1>
+    </div>
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <a asp-controller="Products" asp-action="Index">Products</a>
+        <span>Details</span>
+    </nav>
+</div>
+<div class="detail-card">
+    <div class="detail-grid">
+        <div>
+            <h3>Price</h3>
+            <p>@Model.UnitPrice:C</p>
+        </div>
+    </div>
+    <section class="section-card">
+        <h2>Description</h2>
+        <p>@Model.Description</p>
+    </section>
+</div>

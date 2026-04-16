@@ -1,0 +1,38 @@
+@model IEnumerable<HelperZaOptimalnuKupnju.Models.Order>
+@{
+    ViewData["Title"] = "Orders";
+}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Entity list</p>
+        <h1>Orders</h1>
+    </div>
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span>Orders</span>
+    </nav>
+</div>
+<div class="entity-card">
+    <table class="entity-table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Buyer</th>
+                <th>Status</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.Buyer.FirstName @order.Buyer.LastName</td>
+                    <td>@order.Status</td>
+                    <td><strong>@order.TotalAmount:C</strong></td>
+                    <td><a asp-action="Details" asp-route-id="@order.Id">Details</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

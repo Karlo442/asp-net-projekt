@@ -1,8 +1,36 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Mock Repository Home";
+    var counts = ViewBag.EntityCounts as Dictionary<string, int>;
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="page-hero hero-large">
+    <div class="hero-copy">
+        <span class="eyebrow">Mock repository demo</span>
+        <h1>Static data, clean navigation, and entity details</h1>
+        <p>Explore the mock repository for stores, users, products, orders, and order items. Each entity includes an index list and a details page.</p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" asp-controller="Users" asp-action="Index">View Users</a>
+            <a class="btn btn-secondary" asp-controller="Stores" asp-action="Index">View Stores</a>
+        </div>
+    </div>
 </div>
+
+<section class="summary-grid">
+    @if (counts != null)
+    {
+        foreach (var kv in counts)
+        {
+            <article class="summary-card">
+                <h2>@kv.Value</h2>
+                <p>@kv.Key</p>
+            </article>
+        }
+    }
+</section>
+
+<section class="content-section">
+    <div class="section-card">
+        <h2>How to navigate</h2>
+        <p>Use the navigation menu to visit all entity pages. Each index page links to details.</p>
+    </div>
+</section>
+

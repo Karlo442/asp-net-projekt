@@ -1,0 +1,44 @@
+@model HelperZaOptimalnuKupnju.Models.Store
+@{
+    ViewData["Title"] = "Store Details";
+}
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Details</p>
+        <h1>@Model.Name</h1>
+    </div>
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <a asp-controller="Stores" asp-action="Index">Stores</a>
+        <span>Details</span>
+    </nav>
+</div>
+<div class="detail-card">
+    <div class="detail-grid">
+        <div>
+            <h3>Brand</h3>
+            <p>@Model.Brand</p>
+        </div>
+        <div>
+            <h3>Address</h3>
+            <p>@Model.Address</p>
+            <p>@Model.City, @Model.Country</p>
+        </div>
+        <div>
+            <h3>Opening Hours</h3>
+            <p>@Model.OpeningHours</p>
+        </div>
+    </div>
+    @if (Model.Products != null && Model.Products.Any())
+    {
+        <section class="section-card">
+            <h2>Products available</h2>
+            <ul class="detail-list">
+                @foreach (var product in Model.Products)
+                {
+                    <li><a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">@product.Name</a> • @product.UnitPrice:C</li>
+                }
+            </ul>
+        </section>
+    }
+</div>
