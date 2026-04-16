@@ -274,3 +274,304 @@ header .navbar {
     width: 100%;
   }
 }
+
+/* Discount Modal Styles */
+.discount-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.discount-modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.discount-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 48px 32px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(200, 16, 46, 0.4);
+  animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes modalBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(30px);
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.discount-modal.closing {
+  animation: modalExit 0.4s ease-in forwards;
+}
+
+@keyframes modalExit {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: var(--primary);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.modal-close:hover {
+  transform: rotate(90deg) scale(1.2);
+}
+
+.modal-content {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.discount-header {
+  margin-bottom: 20px;
+}
+
+.flash-text {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: white;
+  background: var(--primary);
+  padding: 8px 16px;
+  border-radius: 50px;
+  animation: headerPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes headerPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(200, 16, 46, 0);
+  }
+}
+
+.discount-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 24px 0;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+.discount-percent {
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+  text-shadow: 0 4px 12px rgba(200, 16, 46, 0.3);
+}
+
+.discount-label {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #666;
+  margin-top: 12px;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.modal-title {
+  margin: 16px 0 8px;
+  font-size: 1.8rem;
+  color: var(--text);
+}
+
+.modal-subtitle {
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.promo-code-box {
+  display: flex;
+  gap: 8px;
+  margin: 24px 0;
+  background: linear-gradient(135deg, rgba(200, 16, 46, 0.1), rgba(200, 16, 46, 0.05));
+  padding: 14px;
+  border-radius: 12px;
+  border: 2px solid rgba(200, 16, 46, 0.2);
+}
+
+.promo-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+  outline: none;
+}
+
+.copy-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.copy-btn:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.copy-btn.copied {
+  background: #43aa8b;
+}
+
+.offer-terms {
+  margin: 16px 0 24px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.btn-claim {
+  width: 100%;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, var(--primary), #ff4950);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 24px rgba(200, 16, 46, 0.3);
+}
+
+.btn-claim:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(200, 16, 46, 0.4);
+}
+
+.btn-claim:active {
+  transform: translateY(0);
+}
+
+/* Particle effects */
+.particle {
+  position: absolute;
+  background: var(--primary);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.particle#particle1 {
+  width: 12px;
+  height: 12px;
+  top: 20px;
+  right: 30px;
+  animation: floatParticle1 2s ease-in-out infinite;
+}
+
+.particle#particle2 {
+  width: 8px;
+  height: 8px;
+  bottom: 40px;
+  left: 20px;
+  animation: floatParticle2 2.5s ease-in-out infinite;
+}
+
+.particle#particle3 {
+  width: 10px;
+  height: 10px;
+  top: 50%;
+  right: 10px;
+  animation: floatParticle3 2.8s ease-in-out infinite;
+}
+
+.particle#particle4 {
+  width: 6px;
+  height: 6px;
+  bottom: 30px;
+  right: 40px;
+  animation: floatParticle4 2.2s ease-in-out infinite;
+}
+
+.particle#particle5 {
+  width: 9px;
+  height: 9px;
+  top: 30px;
+  left: 30px;
+  animation: floatParticle5 2.6s ease-in-out infinite;
+}
+
+@keyframes floatParticle1 {
+  0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.8; }
+  50% { transform: translateY(-20px) translateX(15px) scale(0.8); opacity: 0.4; }
+}
+
+@keyframes floatParticle2 {
+  0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
+  50% { transform: translateY(-25px) translateX(-10px) scale(0.7); opacity: 0.3; }
+}
+
+@keyframes floatParticle3 {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
+  50% { transform: translateY(-30px) scale(0.6); opacity: 0.3; }
+}
+
+@keyframes floatParticle4 {
+  0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
+  50% { transform: translateY(-20px) translateX(10px) scale(0.5); opacity: 0.2; }
+}
+
+@keyframes floatParticle5 {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
+  50% { transform: translateY(-25px) scale(0.7); opacity: 0.4; }
+}
