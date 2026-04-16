@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "powershell": "Add-Content -Path 'C:\\Users\\karlo\\source\\repos\\asp-net-projekt\\lab-1\\log.txt' -Value \\\"$input\\\""
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "powershell": "Add-Content -Path 'C:\\Users\\karlo\\source\\repos\\asp-net-projekt\\lab-1\\log.txt' -Value \"$input\""
+      }
+    ]
+  }
+}
