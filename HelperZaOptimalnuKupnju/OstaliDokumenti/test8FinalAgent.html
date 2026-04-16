@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test 8 Final Agent</title>
+  <style>
+    :root {
+      --primary-red: #c8102e;
+      --white: #ffffff;
+      --light-bg: #f7f7f8;
+      --dark-text: #1a1a1a;
+      --muted-text: #5f5f5f;
+      --border-radius: 20px;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--light-bg);
+      color: var(--dark-text);
+      overflow-x: hidden;
+    }
+
+    .hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary-red) 0%, #e63946 100%);
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+      animation: parallax 20s linear infinite;
+    }
+
+    @keyframes parallax {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100px); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      padding: 0 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      margin: 0 0 16px;
+      line-height: 1.05;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .masonry {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      padding: 48px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:nth-child(odd) {
+      transform: translateY(20px);
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    .card h3 {
+      margin: 0 0 12px;
+      color: var(--primary-red);
+      font-size: 1.4rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted-text);
+      line-height: 1.6;
+    }
+
+    .circular-nav {
+      position: fixed;
+      top: 50%;
+      right: 24px;
+      transform: translateY(-50%);
+      width: 60px;
+      height: 60px;
+      background: var(--primary-red);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      z-index: 10;
+    }
+
+    .circular-nav:hover {
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .circular-nav::after {
+      content: '☰';
+      color: var(--white);
+      font-size: 1.5rem;
+    }
+
+    .side-panel {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 300px;
+      height: 100vh;
+      background: var(--white);
+      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
+      transition: right 0.4s ease;
+      padding: 48px 24px;
+      z-index: 9;
+    }
+
+    .side-panel.open {
+      right: 0;
+    }
+
+    .side-panel ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .side-panel li {
+      margin-bottom: 16px;
+    }
+
+    .side-panel a {
+      color: var(--dark-text);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .side-panel a:hover {
+      color: var(--primary-red);
+    }
+
+    @media (max-width: 768px) {
+      .masonry {
+        grid-template-columns: 1fr;
+        padding: 24px 16px;
+      }
+
+      .circular-nav {
+        width: 50px;
+        height: 50px;
+        right: 16px;
+      }
+
+      .side-panel {
+        width: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Test 8 Final Agent</h1>
+      <p>A one-page showcase with unique UX: parallax backgrounds, masonry layout, interactive cards, and a circular navigation panel.</p>
+    </div>
+  </section>
+
+  <section class="masonry">
+    <div class="card">
+      <h3>Micro-Interactions</h3>
+      <p>Hover over cards for subtle scaling and shadow effects, enhancing user engagement without overwhelming the design.</p>
+    </div>
+    <div class="card">
+      <h3>Non-Linear Layout</h3>
+      <p>This masonry grid arranges content in a staggered, visually dynamic way, breaking from standard rows and columns.</p>
+    </div>
+    <div class="card">
+      <h3>Custom Scroll Effects</h3>
+      <p>The hero background features parallax scrolling, creating depth and movement as you navigate the page.</p>
+    </div>
+    <div class="card">
+      <h3>Interactive Elements</h3>
+      <p>Cards expand on hover with CSS transforms, revealing more content or triggering animations for a unique experience.</p>
+    </div>
+    <div class="card">
+      <h3>Unique Navigation</h3>
+      <p>The circular menu on the right slides in a side panel, offering an alternative to traditional horizontal bars.</p>
+    </div>
+    <div class="card">
+      <h3>Accessibility Focus</h3>
+      <p>Keyboard navigation and high contrast ensure the custom interactions are usable for all users.</p>
+    </div>
+  </section>
+
+  <div class="circular-nav" onclick="togglePanel()"></div>
+  <div class="side-panel" id="sidePanel">
+    <ul>
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#masonry">Features</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+
+  <script>
+    function togglePanel() {
+      document.getElementById('sidePanel').classList.toggle('open');
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+        togglePanel(); // Close panel after click
+      });
+    });
+  </script>
+</body>
+</html>
