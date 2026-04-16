@@ -59,21 +59,21 @@ namespace HelperZaOptimalnuKupnju.MockData
                     Id = 1,
                     Name = "Jaja XL",
                     Description = "Svježa kokošja jaja",
-                    UnitPrice = 1.50m
+                    UnitPrice = 2.50m
                 },
                 new Product
                 {
                     Id = 2,
                     Name = "Losos file",
                     Description = "Svježi file lososa 200g",
-                    UnitPrice = 45.00m
+                    UnitPrice = 15.00m
                 },
                 new Product
                 {
                     Id = 3,
                     Name = "Mlijeko 1L",
                     Description = "Pasirano mlijeko 1L",
-                    UnitPrice = 6.99m
+                    UnitPrice = 1.99m
                 }
             };
 
