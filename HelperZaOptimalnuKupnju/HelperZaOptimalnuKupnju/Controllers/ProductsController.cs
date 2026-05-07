@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelperZaOptimalnuKupnju.Controllers
 {
+    [Route("proizv")]
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,11 +15,15 @@ namespace HelperZaOptimalnuKupnju.Controllers
             _context = context;
         }
 
+        [Route("")]
+        [Route("lista")]
         public IActionResult Index()
         {
             return View(_context.Products.Include(p => p.Stores).ToList());
         }
 
+        [Route("{id:int}")]
+        [Route("detalji/{id:int}")]
         public IActionResult Details(int id)
         {
             var product = _context.Products

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelperZaOptimalnuKupnju.Controllers
 {
+    [Route("korisn")]
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,11 +15,15 @@ namespace HelperZaOptimalnuKupnju.Controllers
             _context = context;
         }
 
+        [Route("")]
+        [Route("lista")]
         public IActionResult Index()
         {
             return View(_context.Users.Include(u => u.Orders).ToList());
         }
 
+        [Route("{id:int}")]
+        [Route("profil/{id:int}")]
         public IActionResult Details(int id)
         {
             var user = _context.Users
