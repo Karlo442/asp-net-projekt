@@ -18,5 +18,8 @@ namespace HelperZaOptimalnuKupnju.Models
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal UnitPrice { get; set; }
+
+        public virtual ICollection<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
+        public virtual ICollection<Store>? Stores { get; set; } = new List<Store>();
     }
 }

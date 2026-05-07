@@ -37,6 +37,6 @@ namespace HelperZaOptimalnuKupnju.Models
         [Required]
         public bool IsActive { get; set; }
 
-        public ICollection<Order>? Orders { get; set; }
+        public virtual ICollection<Order>? Orders { get; set; } = new List<Order>();
     }
 }

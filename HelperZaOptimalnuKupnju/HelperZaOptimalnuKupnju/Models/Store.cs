@@ -33,6 +33,6 @@ namespace HelperZaOptimalnuKupnju.Models
         public string OpeningHours { get; set; } = string.Empty;
 
         // Navigacijsko svojstvo
-        public ICollection<Product>? Products { get; set; }
+        public virtual ICollection<Product>? Products { get; set; } = new List<Product>();
     }
 }

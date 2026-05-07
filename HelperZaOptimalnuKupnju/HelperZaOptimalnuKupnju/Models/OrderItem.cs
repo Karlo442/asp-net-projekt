@@ -13,14 +13,14 @@ namespace HelperZaOptimalnuKupnju.Models
 
         [ForeignKey(nameof(OrderId))]
         [Required]
-        public Order Order { get; set; } = null!;
+        public virtual Order Order { get; set; } = null!;
 
         [Required]
         public int ProductId { get; set; }
 
         [ForeignKey(nameof(ProductId))]
         [Required]
-        public Product Product { get; set; } = null!;
+        public virtual Product Product { get; set; } = null!;
 
         [Required]
         public int Quantity { get; set; }

@@ -15,7 +15,7 @@ namespace HelperZaOptimalnuKupnju.Models
 
         [ForeignKey(nameof(BuyerId))]
         [Required]
-        public User Buyer { get; set; } = null!;
+        public virtual User Buyer { get; set; } = null!;
 
         [Required]
         public DateTime CreatedAt { get; set; }
@@ -29,6 +29,6 @@ namespace HelperZaOptimalnuKupnju.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
-        public ICollection<OrderItem>? Items { get; set; }
+        public virtual ICollection<OrderItem>? Items { get; set; } = new List<OrderItem>();
     }
 }
