@@ -1,4 +1,4 @@
-using HelperZaOptimalnuKupnju.MockData;
+using HelperZaOptimalnuKupnju.Data;
 using HelperZaOptimalnuKupnju.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -7,15 +7,22 @@ namespace HelperZaOptimalnuKupnju.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ApplicationDbContext _context;
+
+        public HomeController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         public IActionResult Index()
         {
             ViewBag.EntityCounts = new Dictionary<string, int>
             {
-                ["Users"] = MockRepository.Users.Count,
-                ["Stores"] = MockRepository.Stores.Count,
-                ["Products"] = MockRepository.Products.Count,
-                ["Orders"] = MockRepository.Orders.Count,
-                ["OrderItems"] = MockRepository.OrderItems.Count
+                ["Users"] = _context.Users.Count(),
+                ["Stores"] = _context.Stores.Count(),
+                ["Products"] = _context.Products.Count(),
+                ["Orders"] = _context.Orders.Count(),
+                ["OrderItems"] = _context.OrderItems.Count()
             };
             return View();
         }
