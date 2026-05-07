@@ -1,0 +1,46 @@
+erDiagram
+    USER {
+        int Id PK
+        string FirstName
+        string LastName
+        string Email
+        string Phone
+        DateTime RegisteredAt
+        bool IsActive
+        enum Role
+    }
+    ORDER {
+        int Id PK
+        int BuyerId FK
+        DateTime CreatedAt
+        DateTime ExpectedDeliveryDateTime
+        enum Status
+        decimal TotalAmount
+    }
+    ORDERITEM {
+        int Id PK
+        int OrderId FK
+        int ProductId FK
+        int Quantity
+        decimal UnitPrice
+    }
+    PRODUCT {
+        int Id PK
+        string Name
+        string Description
+        decimal UnitPrice
+    }
+    STORE {
+        int Id PK
+        string Name
+        string Brand
+        string Address
+        string City
+        string Country
+        string OpeningHours
+    }
+
+    USER ||--o{ ORDER : has
+    ORDER ||--o{ ORDERITEM : contains
+    PRODUCT ||--o{ ORDERITEM : included_in
+    STORE }o--o{ PRODUCT : offers
