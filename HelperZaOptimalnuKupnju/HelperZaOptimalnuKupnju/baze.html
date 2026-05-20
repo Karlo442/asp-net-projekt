@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Baze Podataka - HelperZaOptimalnuKupnju</title>
+    
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/site.css?v=XZ0S-KUhE5PlPlIH5IhuDhcbECzv8TwZGCfBqp71Zqo" />
+    <link rel="stylesheet" href="/HelperZaOptimalnuKupnju.styles.css?v=6glJWbDFTuuZm8iIkSYpaAKKSHACcyZzdg4BDNCX5Dk" />
+</head>
+<body>
+    <header b-34r09yhv0t>
+        <nav b-34r09yhv0t class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div b-34r09yhv0t class="container-fluid">
+                <a class="navbar-brand" href="/">HelperZaOptimalnuKupnju</a>
+                <button b-34r09yhv0t class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span b-34r09yhv0t class="navbar-toggler-icon"></span>
+                </button>
+                <div b-34r09yhv0t class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul b-34r09yhv0t class="navbar-nav flex-grow-1">
+                        <li b-34r09yhv0t class="nav-item">
+                            <a class="nav-link text-dark" href="/">Home</a>
+                        </li>
+                        <li b-34r09yhv0t class="nav-item">
+                            <a b-34r09yhv0t class="nav-link text-dark" href="/korisn/lista">Korisnici</a>
+                        </li>
+                        <li b-34r09yhv0t class="nav-item">
+                            <a b-34r09yhv0t class="nav-link text-dark" href="/trgov/sve">Trgovine</a>
+                        </li>
+                        <li b-34r09yhv0t class="nav-item">
+                            <a b-34r09yhv0t class="nav-link text-dark" href="/proizv/lista">Proizvodi</a>
+                        </li>
+                        <li b-34r09yhv0t class="nav-item">
+                            <a b-34r09yhv0t class="nav-link text-dark" href="/narudz/sve">Narudžbe</a>
+                        </li>
+                        <li b-34r09yhv0t class="nav-item">
+                            <a b-34r09yhv0t class="nav-link text-dark" href="/orderitems">Stavke</a>
+                        </li>
+                        <li b-34r09yhv0t class="nav-item">
+                            <a b-34r09yhv0t class="nav-link text-dark" href="/list-example">Primjer Liste</a>
+                        </li>
+                        <li b-34r09yhv0t class="nav-item">
+                            <a b-34r09yhv0t class="nav-link text-dark" href="/baze">Baze Podataka</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div b-34r09yhv0t class="container">
+        <main b-34r09yhv0t role="main" class="pb-3">
+            
+<h1>Baze Podataka</h1>
+
+<section>
+    <h2>Informacije o bazi</h2>
+    <ul>
+        <li><strong>Putanja baze:</strong> C:\Users\karlo\source\repos\asp-net-projekt\HelperZaOptimalnuKupnju\HelperZaOptimalnuKupnju\HelperZaOptimalnuKupnju.db</li>
+        <li><strong>Users:</strong> 4</li>
+        <li><strong>Stores:</strong> 3</li>
+        <li><strong>Products:</strong> 3</li>
+        <li><strong>Orders:</strong> 3</li>
+        <li><strong>OrderItems:</strong> 3</li>
+    </ul>
+    <p>
+        <a class="btn btn-primary" href="/baze/download">Preuzmi SQLite datoteku</a>
+    </p>
+</section>
+
+<section>
+    <h2>ER Dijagram (Mermaid)</h2>
+    <p>Renderiran koristeći Mermaid.js; ispod možeš generirati PNG za preuzimanje.</p>
+
+    <div class="mermaid">
+erDiagram
+    USER {
+        int Id PK
+        string FirstName
+        string LastName
+        string Email
+        string Phone
+        DateTime RegisteredAt
+        bool IsActive
+        enum Role
+    }
+    ORDER {
+        int Id PK
+        int BuyerId FK
+        DateTime CreatedAt
+        DateTime ExpectedDeliveryDateTime
+        enum Status
+        decimal TotalAmount
+    }
+    ORDERITEM {
+        int Id PK
+        int OrderId FK
+        int ProductId FK
+        int Quantity
+        decimal UnitPrice
+    }
+    PRODUCT {
+        int Id PK
+        string Name
+        string Description
+        decimal UnitPrice
+    }
+    STORE {
+        int Id PK
+        string Name
+        string Brand
+        string Address
+        string City
+        string Country
+        string OpeningHours
+    }
+
+    USER ||--o{ ORDER : has
+    ORDER ||--o{ ORDERITEM : contains
+    PRODUCT ||--o{ ORDERITEM : included_in
+    STORE }o--o{ PRODUCT : offers
+    </div>
+
+    <p class="mt-3">
+        <button id="exportBtn" class="btn btn-secondary">Generiraj PNG</button>
+    </p>
+
+    <div class="mt-3">
+        <h3>PNG Preview</h3>
+        <img id="pngPreview" alt="ER diagram PNG preview" style="max-width:100%;border:1px solid #ddd;" />
+        <p><a id="downloadPng" class="btn btn-success" download="er-diagram.png">Preuzmi PNG</a></p>
+    </div>
+</section>
+
+
+        </main>
+    </div>
+
+    <footer b-34r09yhv0t class="border-top footer text-muted">
+        <div b-34r09yhv0t class="container">
+            &copy; 2026 - HelperZaOptimalnuKupnju - <a href="/Home/Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/site.js?v=MvfpLyFlFThSXhoL0B8K7SJOhMYH14At9ZCn5XXArd0"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+
+        function svgToPng() {
+            const svg = document.querySelector('.mermaid svg');
+            if (!svg) {
+                alert('SVG nije pronađen. Pričekaj da Mermaid renderira dijagram.');
+                return;
+            }
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svg);
+            const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+            const img = new Image();
+            img.onload = function () {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+                const png = canvas.toDataURL('image/png');
+                const preview = document.getElementById('pngPreview');
+                preview.src = png;
+                const download = document.getElementById('downloadPng');
+                download.href = png;
+                URL.revokeObjectURL(url);
+            };
+            img.onerror = function () {
+                alert('Greška pri konverziji SVG -> PNG');
+                URL.revokeObjectURL(url);
+            };
+            img.src = url;
+        }
+
+        document.getElementById('exportBtn').addEventListener('click', svgToPng);
+    </script>
+
+</body>
+</html>

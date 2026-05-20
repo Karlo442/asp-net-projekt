@@ -27,6 +27,15 @@ namespace HelperZaOptimalnuKupnju.Controllers
             return View();
         }
 
+        // Example generic "list" page used to demonstrate the SKILL.md workflow.
+        // This returns a simple list of sample items; replace with DB-backed query when scaffolding a real list page.
+        [HttpGet("/list-example")]
+        public IActionResult ListExample()
+        {
+            var items = new List<string> { "Artikl A", "Artikl B", "Artikl C" };
+            return View(items);
+        }
+
         public IActionResult Privacy()
         {
             return View();

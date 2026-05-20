@@ -1,0 +1,14 @@
+@model IEnumerable<string>
+
+@{
+    ViewData["Title"] = "List Example";
+}
+
+<h2>Primjer List stranice</h2>
+<p>Ovo je primjer jednostavne list stranice generirane prema `.copilot/skills/list/SKILL.md`.</p>
+<ul>
+@foreach (var item in Model)
+{
+    <li>@item</li>
+}
+</ul>
