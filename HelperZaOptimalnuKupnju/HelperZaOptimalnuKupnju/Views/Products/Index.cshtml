@@ -11,14 +11,220 @@
         <a asp-controller="Home" asp-action="Index">Home</a>
         <span>Products</span>
     </nav>
+    <a asp-action="Create" class="btn btn-primary">+ Novi proizvod</a>
 </div>
-<div class="card-grid">
+
+<div class="search-container">
+    <input type="text" id="searchInput" class="search-box" placeholder="Pretraži proizvode..." value="@ViewData["SearchTerm"]" />
+    <button id="searchBtn" class="btn-search">🔍 Pretraži</button>
+    <button id="clearBtn" class="btn-clear">✕ Očisti</button>
+</div>
+
+<div id="searchResults" class="card-grid">
     @foreach (var product in Model)
     {
         <article class="entity-card small-card">
             <h3><a asp-action="Details" asp-route-id="@product.Id">@product.Name</a></h3>
             <p>@product.Description</p>
-            <p><strong>Price:</strong> @product.UnitPrice:C</p>
+            <p><strong>Cijena:</strong> @product.UnitPrice:C</p>
+            <div class="card-actions">
+                <a asp-action="Edit" asp-route-id="@product.Id" class="btn-sm">Uredi</a>
+                <button class="btn-sm delete-btn" data-id="@product.Id">Obriši</button>
+            </div>
         </article>
     }
 </div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const searchResults = document.getElementById('searchResults');
+
+        // Debounce pretragu
+        let searchTimeout;
+        searchInput.addEventListener('keyup', function(e) {
+            clearTimeout(searchTimeout);
+            if (e.key === 'Enter') {
+                performSearch();
+            } else {
+                searchTimeout = setTimeout(performSearch, 500);
+            }
+        });
+
+        searchBtn.addEventListener('click', performSearch);
+
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            window.location.href = '@Url.Action("Index", "Products")';
+        });
+
+        function performSearch() {
+            const term = searchInput.value.trim();
+            if (term.length < 2) {
+                if (term.length === 0) {
+                    window.location.href = '@Url.Action("Index", "Products")';
+                }
+                return;
+            }
+
+            fetch(`@Url.Action("Search", "Products")?term=${encodeURIComponent(term)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.data && data.data.length > 0) {
+                        searchResults.innerHTML = data.data.map(product => `
+                            <article class="entity-card small-card">
+                                <h3><a href="@Url.Action("Details", "Products")/${product.id}">${product.name}</a></h3>
+                                <p><strong>Cijena:</strong> ${product.price.toFixed(2)} kn</p>
+                                <div class="card-actions">
+                                    <a href="@Url.Action("Edit", "Products")/${product.id}" class="btn-sm">Uredi</a>
+                                    <button class="btn-sm delete-btn" data-id="${product.id}">Obriši</button>
+                                </div>
+                            </article>
+                        `).join('');
+                        
+                        // Ponovno pripiši event listenere
+                        attachDeleteListeners();
+                    } else {
+                        searchResults.innerHTML = '<p class="no-results">Nema pronađenih proizvoda.</p>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Greška pri pretrazi:', err);
+                    searchResults.innerHTML = '<p class="error">Greška pri pretrazi.</p>';
+                });
+        }
+
+        function attachDeleteListeners() {
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.dataset.id;
+                    if (confirm('Jeste li sigurni da želite obrisati ovaj proizvod?')) {
+                        deleteProduct(productId);
+                    }
+                });
+            });
+        }
+
+        function deleteProduct(id) {
+            fetch(`@Url.Action("Delete", "Products")/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Proizvod je obrisan.');
+                    performSearch();
+                } else {
+                    alert('Greška pri brisanju.');
+                }
+            })
+            .catch(err => console.error('Greška:', err));
+        }
+
+        // Inicijalizacija
+        document.addEventListener('DOMContentLoaded', function() {
+            attachDeleteListeners();
+        });
+    </script>
+}
+
+<style>
+    .search-container {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .search-box {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .btn-search, .btn-clear {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-search {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-search:hover {
+        background: #0056b3;
+    }
+
+    .btn-clear {
+        background: #f0f0f0;
+    }
+
+    .btn-clear:hover {
+        background: #e0e0e0;
+    }
+
+    .no-results, .error {
+        text-align: center;
+        padding: 32px;
+        color: #666;
+    }
+
+    .error {
+        color: #d32f2f;
+    }
+
+    .card-actions {
+        margin-top: 12px;
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        background: #f0f0f0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 13px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-sm:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .delete-btn {
+        background: #ffebee !important;
+        color: #d32f2f;
+    }
+
+    .delete-btn:hover {
+        background: #d32f2f !important;
+        color: white;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+

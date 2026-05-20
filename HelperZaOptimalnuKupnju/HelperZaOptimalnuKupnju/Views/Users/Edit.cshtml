@@ -1,0 +1,268 @@
+@model HelperZaOptimalnuKupnju.Models.ViewModels.UserEditViewModel
+@{
+    ViewData["Title"] = "Uredi korisnika";
+}
+
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Uređivanje stavke</p>
+        <h1>Uredi korisnika</h1>
+    </div>
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <a asp-controller="Users" asp-action="Index">Korisnici</a>
+        <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.Id">Profil</a>
+        <span>Uredi</span>
+    </nav>
+</div>
+
+<div class="form-container">
+    <form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="entity-form">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <h4>Greška pri validaciji:</h4>
+                <ul>
+                    @foreach (var modelState in ViewData.ModelState.Values)
+                    {
+                        @foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+
+        <input asp-for="Id" type="hidden" />
+
+        <div class="form-group">
+            <label asp-for="FirstName" class="form-label"></label>
+            <input asp-for="FirstName" class="form-control" placeholder="Ime" required />
+            <span asp-validation-for="FirstName" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="LastName" class="form-label"></label>
+            <input asp-for="LastName" class="form-control" placeholder="Prezime" required />
+            <span asp-validation-for="LastName" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" type="email" class="form-control" placeholder="example@email.com" required />
+            <span asp-validation-for="Email" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Phone" class="form-label"></label>
+            <input asp-for="Phone" type="tel" class="form-control" placeholder="+385 1 1234567" required />
+            <span asp-validation-for="Phone" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Role" class="form-label"></label>
+            <select asp-for="Role" class="form-control" required>
+                <option value="">-- Odaberi ulogu --</option>
+                <option value="Buyer" selected="@(Model.Role == HelperZaOptimalnuKupnju.Models.UserRole.Buyer)">Kupac</option>
+                <option value="Admin" selected="@(Model.Role == HelperZaOptimalnuKupnju.Models.UserRole.Admin)">Administrator</option>
+            </select>
+            <span asp-validation-for="Role" class="error-message"></span>
+        </div>
+
+        <div class="form-group checkbox">
+            <label>
+                <input asp-for="IsActive" type="checkbox" />
+                Aktivna
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Spremi promjene</button>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Otkaži</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.entity-form');
+            const inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], select');
+
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    validateField(this);
+                });
+
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('is-invalid')) {
+                        validateField(this);
+                    }
+                });
+            });
+
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                inputs.forEach(input => {
+                    if (!validateField(input)) {
+                        isValid = false;
+                    }
+                });
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        function validateField(field) {
+            const errorSpan = field.parentElement.querySelector('.error-message');
+            let isValid = true;
+
+            if (field.hasAttribute('required') && field.value.trim() === '') {
+                isValid = false;
+            } 
+
+            if (isValid) {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+                if (errorSpan) errorSpan.textContent = '';
+            } else {
+                field.classList.add('is-invalid');
+                field.classList.remove('is-valid');
+                if (errorSpan) errorSpan.textContent = 'Ovo polje je obavezno i mora biti ispravno.';
+            }
+
+            return isValid;
+        }
+    </script>
+}
+
+<style>
+    .form-container {
+        max-width: 600px;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .entity-form {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group.checkbox {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-group.checkbox label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+    }
+
+    .form-group.checkbox input {
+        margin-right: 8px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .form-control.is-invalid {
+        border-color: #d32f2f;
+    }
+
+    .form-control.is-valid {
+        border-color: #4caf50;
+    }
+
+    .error-message {
+        display: block;
+        color: #d32f2f;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+
+    .alert {
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 16px;
+    }
+
+    .alert-danger {
+        background: #ffebee;
+        color: #d32f2f;
+        border: 1px solid #ef5350;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

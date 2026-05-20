@@ -1,0 +1,344 @@
+@model HelperZaOptimalnuKupnju.Models.ViewModels.OrderCreateViewModel
+@{
+    ViewData["Title"] = "Nova narudžba";
+    var buyers = (ViewData["Buyers"] as List<HelperZaOptimalnuKupnju.Models.User>) ?? new List<HelperZaOptimalnuKupnju.Models.User>();
+}
+
+<div class="page-header">
+    <div>
+        <p class="eyebrow">Nova stavka</p>
+        <h1>Kreiraj narudžbu</h1>
+    </div>
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <a asp-controller="Orders" asp-action="Index">Narudžbe</a>
+        <span>Novo</span>
+    </nav>
+</div>
+
+<div class="form-container">
+    <form asp-action="Create" method="post" class="entity-form">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <h4>Greška pri validaciji:</h4>
+                <ul>
+                    @foreach (var modelState in ViewData.ModelState.Values)
+                    {
+                        @foreach (var error in modelState.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+
+        <div class="form-group">
+            <label for="buyerAutocomplete" class="form-label">
+                Kupac
+                <span class="required-indicator">*</span>
+            </label>
+            <div class="autocomplete-wrapper">
+                <input type="text" id="buyerAutocomplete" class="form-control autocomplete-input" placeholder="Unesi ime kupca..." required />
+                <input asp-for="BuyerId" type="hidden" id="BuyerId" class="autocomplete-value" />
+                <ul id="buyerSuggestions" class="autocomplete-suggestions"></ul>
+            </div>
+            <span asp-validation-for="BuyerId" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ExpectedDeliveryDateTime" class="form-label"></label>
+            <input asp-for="ExpectedDeliveryDateTime" type="datetime-local" class="form-control" required />
+            <span asp-validation-for="ExpectedDeliveryDateTime" class="error-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Status" class="form-label"></label>
+            <select asp-for="Status" class="form-control" required>
+                <option value="">-- Odaberi status --</option>
+                <option value="Pending">Čeka se</option>
+                <option value="Confirmed">Potvrđena</option>
+                <option value="Shipped">Poslana</option>
+                <option value="Delivered">Dostavljeno</option>
+            </select>
+            <span asp-validation-for="Status" class="error-message"></span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Spremi</button>
+            <a asp-action="Index" class="btn btn-secondary">Otkaži</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        // Autocomplete za kupce
+        const buyerInput = document.getElementById('buyerAutocomplete');
+        const buyerIdInput = document.getElementById('BuyerId');
+        const buyerSuggestions = document.getElementById('buyerSuggestions');
+        const autocompleteValue = document.querySelector('.autocomplete-value');
+
+        let autocompleteTimeout;
+        buyerInput.addEventListener('input', function() {
+            const term = this.value.trim();
+            clearTimeout(autocompleteTimeout);
+
+            if (term.length < 2) {
+                buyerSuggestions.innerHTML = '';
+                return;
+            }
+
+            autocompleteTimeout = setTimeout(() => {
+                fetch(`@Url.Action("AutocompleteBuyers", "Orders")?term=${encodeURIComponent(term)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.data && data.data.length > 0) {
+                            buyerSuggestions.innerHTML = data.data.map(buyer => `
+                                <li class="suggestion-item" data-id="${buyer.id}">
+                                    ${buyer.text}
+                                </li>
+                            `).join('');
+
+                            document.querySelectorAll('.suggestion-item').forEach(item => {
+                                item.addEventListener('click', function() {
+                                    buyerInput.value = this.textContent;
+                                    buyerIdInput.value = this.dataset.id;
+                                    buyerSuggestions.innerHTML = '';
+                                    buyerInput.classList.add('is-valid');
+                                    buyerInput.classList.remove('is-invalid');
+                                });
+                            });
+                        } else {
+                            buyerSuggestions.innerHTML = '<li class="no-suggestion">Nema rezultata</li>';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Greška pri autocomplete:', err);
+                        buyerSuggestions.innerHTML = '<li class="error-suggestion">Greška pri pretrazi</li>';
+                    });
+            }, 300);
+        });
+
+        // Validacija
+        const form = document.querySelector('.entity-form');
+        const inputs = form.querySelectorAll('input, select');
+
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                validateField(this);
+            });
+
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    validateField(this);
+                }
+            });
+        });
+
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            inputs.forEach(input => {
+                if (!validateField(input)) {
+                    isValid = false;
+                }
+            });
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        function validateField(field) {
+            const errorSpan = field.parentElement.querySelector('.error-message');
+            let isValid = true;
+
+            if (field.hasAttribute('required')) {
+                if (field.id === 'BuyerId') {
+                    isValid = field.value !== '';
+                } else {
+                    isValid = field.value.trim() !== '';
+                }
+            }
+
+            if (isValid) {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+                if (errorSpan) errorSpan.textContent = '';
+            } else {
+                field.classList.add('is-invalid');
+                field.classList.remove('is-valid');
+                if (errorSpan) errorSpan.textContent = 'Ovo polje je obavezno i mora biti ispravno.';
+            }
+
+            return isValid;
+        }
+
+        // Zatvori suggestions kada se klikne negdje drugdje
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.autocomplete-wrapper')) {
+                buyerSuggestions.innerHTML = '';
+            }
+        });
+    </script>
+}
+
+<style>
+    .form-container {
+        max-width: 600px;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .entity-form {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .required-indicator {
+        color: #d32f2f;
+    }
+
+    .form-control, .autocomplete-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus, .autocomplete-input:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .form-control.is-invalid, .autocomplete-input.is-invalid {
+        border-color: #d32f2f;
+    }
+
+    .form-control.is-valid, .autocomplete-input.is-valid {
+        border-color: #4caf50;
+    }
+
+    .autocomplete-wrapper {
+        position: relative;
+    }
+
+    .autocomplete-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .suggestion-item:hover {
+        background: #f0f0f0;
+    }
+
+    .no-suggestion, .error-suggestion {
+        padding: 10px;
+        color: #999;
+        text-align: center;
+    }
+
+    .error-suggestion {
+        color: #d32f2f;
+    }
+
+    .error-message {
+        display: block;
+        color: #d32f2f;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+    }
+
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+
+    .alert {
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 16px;
+    }
+
+    .alert-danger {
+        background: #ffebee;
+        color: #d32f2f;
+        border: 1px solid #ef5350;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

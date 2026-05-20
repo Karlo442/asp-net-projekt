@@ -5,34 +5,283 @@
 <div class="page-header">
     <div>
         <p class="eyebrow">Entity list</p>
-        <h1>Orders</h1>
+        <h1>Narudžbe</h1>
     </div>
     <nav class="breadcrumb">
         <a asp-controller="Home" asp-action="Index">Home</a>
-        <span>Orders</span>
+        <span>Narudžbe</span>
     </nav>
+    <a asp-action="Create" class="btn btn-primary">+ Nova narudžba</a>
 </div>
-<div class="entity-card">
+
+<div class="search-container">
+    <input type="text" id="searchInput" class="search-box" placeholder="Pretraži narudžbe..." value="@ViewData["SearchTerm"]" />
+    <button id="searchBtn" class="btn-search">🔍 Pretraži</button>
+    <button id="clearBtn" class="btn-clear">✕ Očisti</button>
+</div>
+
+<div id="searchResults" class="entity-card">
     <table class="entity-table">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Buyer</th>
+                <th>Kupac</th>
                 <th>Status</th>
-                <th>Total</th>
+                <th>Iznos</th>
+                <th>Akcije</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tableBody">
             @foreach (var order in Model)
             {
-                <tr>
+                <tr class="order-row">
                     <td>@order.Id</td>
                     <td>@order.Buyer.FirstName @order.Buyer.LastName</td>
-                    <td>@order.Status</td>
+                    <td><span class="badge badge-@order.Status.ToString().ToLower()">@order.Status</span></td>
                     <td><strong>@order.TotalAmount:C</strong></td>
-                    <td><a asp-action="Details" asp-route-id="@order.Id">Details</a></td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@order.Id" class="btn-sm">Detalji</a>
+                        <a asp-action="Edit" asp-route-id="@order.Id" class="btn-sm">Uredi</a>
+                        <button class="btn-sm delete-btn" data-id="@order.Id">Obriši</button>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const tableBody = document.getElementById('tableBody');
+
+        let searchTimeout;
+        searchInput.addEventListener('keyup', function(e) {
+            clearTimeout(searchTimeout);
+            if (e.key === 'Enter') {
+                performSearch();
+            } else {
+                searchTimeout = setTimeout(performSearch, 500);
+            }
+        });
+
+        searchBtn.addEventListener('click', performSearch);
+
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            window.location.href = '@Url.Action("Index", "Orders")';
+        });
+
+        function performSearch() {
+            const term = searchInput.value.trim();
+            if (term.length < 2) {
+                if (term.length === 0) {
+                    window.location.href = '@Url.Action("Index", "Orders")';
+                }
+                return;
+            }
+
+            fetch(`@Url.Action("Search", "Orders")?term=${encodeURIComponent(term)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.data && data.data.length > 0) {
+                        tableBody.innerHTML = data.data.map(order => `
+                            <tr class="order-row">
+                                <td>${order.id}</td>
+                                <td>${order.buyerName}</td>
+                                <td><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
+                                <td><strong>${order.totalAmount.toFixed(2)} kn</strong></td>
+                                <td>
+                                    <a href="@Url.Action("Details", "Orders")/${order.id}" class="btn-sm">Detalji</a>
+                                    <a href="@Url.Action("Edit", "Orders")/${order.id}" class="btn-sm">Uredi</a>
+                                    <button class="btn-sm delete-btn" data-id="${order.id}">Obriši</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                        attachDeleteListeners();
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="5" class="no-results">Nema pronađenih narudžbi.</td></tr>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Greška pri pretrazi:', err);
+                    tableBody.innerHTML = '<tr><td colspan="5" class="error">Greška pri pretrazi.</td></tr>';
+                });
+        }
+
+        function attachDeleteListeners() {
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const orderId = this.dataset.id;
+                    if (confirm('Jeste li sigurni da želite obrisati ovu narudžbu?')) {
+                        deleteOrder(orderId);
+                    }
+                });
+            });
+        }
+
+        function deleteOrder(id) {
+            fetch(`@Url.Action("Delete", "Orders")/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Narudžba je obrisana.');
+                    performSearch();
+                } else {
+                    alert('Greška pri brisanju.');
+                }
+            })
+            .catch(err => console.error('Greška:', err));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            attachDeleteListeners();
+        });
+    </script>
+}
+
+<style>
+    .search-container {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .search-box {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .btn-search, .btn-clear {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-search {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-search:hover {
+        background: #0056b3;
+    }
+
+    .btn-clear {
+        background: #f0f0f0;
+    }
+
+    .btn-clear:hover {
+        background: #e0e0e0;
+    }
+
+    .entity-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .entity-table thead {
+        background: #f8f9fa;
+        font-weight: 600;
+    }
+
+    .entity-table th, .entity-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    .entity-table tbody tr:hover {
+        background: #f0f0f0;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-confirmed {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .badge-shipped {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-delivered {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        background: #f0f0f0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 13px;
+        transition: all 0.2s ease;
+        margin-right: 4px;
+    }
+
+    .btn-sm:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .delete-btn {
+        background: #ffebee !important;
+        color: #d32f2f;
+    }
+
+    .delete-btn:hover {
+        background: #d32f2f !important;
+        color: white;
+    }
+
+    .no-results, .error {
+        text-align: center;
+        padding: 32px;
+        color: #666;
+    }
+
+    .error {
+        color: #d32f2f;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+

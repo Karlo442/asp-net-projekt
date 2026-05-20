@@ -1,0 +1,59 @@
+@model DateTime?
+
+@{
+    var fieldName = ViewData["FieldName"]?.ToString() ?? "dateTime";
+    var fieldLabel = ViewData["FieldLabel"]?.ToString() ?? "Date & Time";
+    var required = ViewData["Required"]?.ToString()?.ToLower() == "true";
+    var id = $"{fieldName}Picker";
+    var value = Model?.ToString("yyyy-MM-ddTHH:mm") ?? "";
+}
+
+<div class="form-group">
+    <label for="@id" class="form-label">
+        @fieldLabel
+        @if (required)
+        {
+            <span class="required-indicator">*</span>
+        }
+    </label>
+    <input 
+        type="datetime-local" 
+        id="@id" 
+        name="@fieldName" 
+        class="form-control datetime-picker"
+        value="@value"
+        @(required ? "required" : "")
+        data-field-name="@fieldName" />
+    <small class="form-text text-muted">Format: YYYY-MM-DD HH:MM</small>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/hr.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInputs = document.querySelectorAll('.datetime-picker');
+            
+            dateInputs.forEach(input => {
+                // Detektuj jezik iz HTML-a ili korisni browser locale
+                const locale = document.documentElement.lang || navigator.language || 'en';
+                const isHrLocale = locale.startsWith('hr');
+                
+                flatpickr(input, {
+                    enableTime: true,
+                    dateFormat: 'Y-m-d H:i',
+                    time_24hr: true,
+                    locale: isHrLocale ? 'hr' : 'en',
+                    minDate: new Date(),
+                    position: 'auto',
+                    allowInput: true,
+                    altInput: true,
+                    altFormat: isHrLocale ? 'd.m.Y H:i' : 'm/d/Y H:i',
+                    parseDate: function(datestr, format) {
+                        return new Date(datestr).getTime() / 1000;
+                    }
+                });
+            });
+        });
+    </script>
+}

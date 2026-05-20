@@ -5,35 +5,254 @@
 <div class="page-header">
     <div>
         <p class="eyebrow">Entity list</p>
-        <h1>Users</h1>
+        <h1>Korisnici</h1>
     </div>
     <nav class="breadcrumb">
         <a asp-controller="Home" asp-action="Index">Home</a>
-        <span>Users</span>
+        <span>Korisnici</span>
     </nav>
+    <a asp-action="Create" class="btn btn-primary">+ Novi korisnik</a>
 </div>
-<div class="entity-card">
+
+<div class="search-container">
+    <input type="text" id="searchInput" class="search-box" placeholder="Pretraži korisnike..." value="@ViewData["SearchTerm"]" />
+    <button id="searchBtn" class="btn-search">🔍 Pretraži</button>
+    <button id="clearBtn" class="btn-clear">✕ Očisti</button>
+</div>
+
+<div id="searchResults" class="entity-card">
     <table class="entity-table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
+                <th>Ime</th>
                 <th>Email</th>
-                <th>Role</th>
-                <th>Registered</th>
+                <th>Uloga</th>
+                <th>Status</th>
+                <th>Akcije</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tableBody">
             @foreach (var user in Model)
             {
-                <tr>
-                    <td>@user.Id</td>
-                    <td><a asp-action="Details" asp-route-id="@user.Id">@user.FirstName @user.LastName</a></td>
+                <tr class="user-row">
+                    <td>@user.FirstName @user.LastName</td>
                     <td>@user.Email</td>
                     <td>@user.Role</td>
-                    <td>@user.RegisteredAt.ToString("yyyy-MM-dd")</td>
+                    <td><span class="badge badge-@(user.IsActive ? "active" : "inactive")">@(user.IsActive ? "Aktivna" : "Neaktivna")</span></td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@user.Id" class="btn-sm">Profil</a>
+                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn-sm">Uredi</a>
+                        <button class="btn-sm delete-btn" data-id="@user.Id">Obriši</button>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const tableBody = document.getElementById('tableBody');
+
+        let searchTimeout;
+        searchInput.addEventListener('keyup', function(e) {
+            clearTimeout(searchTimeout);
+            if (e.key === 'Enter') {
+                performSearch();
+            } else {
+                searchTimeout = setTimeout(performSearch, 500);
+            }
+        });
+
+        searchBtn.addEventListener('click', performSearch);
+
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            window.location.href = '@Url.Action("Index", "Users")';
+        });
+
+        function performSearch() {
+            const term = searchInput.value.trim();
+            if (term.length < 2) {
+                if (term.length === 0) {
+                    window.location.href = '@Url.Action("Index", "Users")';
+                }
+                return;
+            }
+
+            fetch(`@Url.Action("Search", "Users")?term=${encodeURIComponent(term)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.data && data.data.length > 0) {
+                        tableBody.innerHTML = data.data.map(user => `
+                            <tr class="user-row">
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td>${user.role}</td>
+                                <td><span class="badge badge-${user.isActive ? 'active' : 'inactive'}">${user.isActive ? 'Aktivna' : 'Neaktivna'}</span></td>
+                                <td>
+                                    <a href="@Url.Action("Details", "Users")/${user.id}" class="btn-sm">Profil</a>
+                                    <a href="@Url.Action("Edit", "Users")/${user.id}" class="btn-sm">Uredi</a>
+                                    <button class="btn-sm delete-btn" data-id="${user.id}">Obriši</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                        attachDeleteListeners();
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="5" class="no-results">Nema pronađenih korisnika.</td></tr>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Greška pri pretrazi:', err);
+                    tableBody.innerHTML = '<tr><td colspan="5" class="error">Greška pri pretrazi.</td></tr>';
+                });
+        }
+
+        function attachDeleteListeners() {
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = this.dataset.id;
+                    if (confirm('Jeste li sigurni da želite obrisati ovog korisnika?')) {
+                        deleteUser(userId);
+                    }
+                });
+            });
+        }
+
+        function deleteUser(id) {
+            fetch(`@Url.Action("Delete", "Users")/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Korisnik je obrisan.');
+                    performSearch();
+                } else {
+                    return response.text().then(text => {
+                        alert('Greška pri brisanju: ' + text);
+                    });
+                }
+            })
+            .catch(err => console.error('Greška:', err));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            attachDeleteListeners();
+        });
+    </script>
+}
+
+<style>
+    .search-container {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .search-box {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .btn-search, .btn-clear {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-search {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-search:hover {
+        background: #0056b3;
+    }
+
+    .btn-clear {
+        background: #f0f0f0;
+    }
+
+    .btn-clear:hover {
+        background: #e0e0e0;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-active {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        background: #f0f0f0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 13px;
+        transition: all 0.2s ease;
+        margin-right: 4px;
+    }
+
+    .btn-sm:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .delete-btn {
+        background: #ffebee !important;
+        color: #d32f2f;
+    }
+
+    .delete-btn:hover {
+        background: #d32f2f !important;
+        color: white;
+    }
+
+    .no-results, .error {
+        text-align: center;
+        padding: 32px;
+        color: #666;
+    }
+
+    .error {
+        color: #d32f2f;
+    }
+
+    @@keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
