@@ -125,7 +125,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
                     _context.Orders.Add(order);
                     _context.SaveChanges();
 
-                    return RedirectToAction(nameof(Details), new { id = order.Id });
+                    return RedirectToAction(nameof(Details), new { id = order.Id, showCelebration = true, type = "narudba" });
                 }
                 catch (Exception ex)
                 {

@@ -113,7 +113,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
                     _context.Users.Add(user);
                     _context.SaveChanges();
 
-                    return RedirectToAction(nameof(Details), new { id = user.Id });
+                    return RedirectToAction(nameof(Details), new { id = user.Id, showCelebration = true, type = "korisnik" });
                 }
                 catch (Exception ex)
                 {
