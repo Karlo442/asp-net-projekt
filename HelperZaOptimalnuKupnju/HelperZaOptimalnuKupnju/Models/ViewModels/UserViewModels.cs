@@ -6,7 +6,7 @@ namespace HelperZaOptimalnuKupnju.Models.ViewModels
     public class UserCreateViewModel
     {
         [Required(ErrorMessage = "Ime je obavezno")]
-        [StringLength(100, ErrorMessage = "Ime ne smije biti duže od 100 znakova")]
+        [StringLength(120, ErrorMessage = "Ime ne smije biti duže od 100 znakova")]
         [Display(Name = "Ime")]
         public string FirstName { get; set; } = string.Empty;
 

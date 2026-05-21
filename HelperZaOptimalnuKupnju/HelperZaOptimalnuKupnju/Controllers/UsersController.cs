@@ -95,7 +95,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
                 {
                     if (_context.Users.Any(u => u.Email == model.Email))
                     {
-                        ModelState.AddModelError("Email", "Email je već registriran.");
+                        ModelState.AddModelError("Email", "Email na serveru je već registriran.");
                         return View(model);
                     }
 

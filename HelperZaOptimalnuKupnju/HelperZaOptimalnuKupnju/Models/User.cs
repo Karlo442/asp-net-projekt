@@ -28,7 +28,7 @@ namespace HelperZaOptimalnuKupnju.Models
 
         [Required]
         [Phone]
-        [StringLength(50)]
+        [StringLength(50, ErrorMessage = "Telefon ne smije sadržavati više od 50 znakova.")]
         public string Phone { get; set; } = string.Empty;
 
         [Required]

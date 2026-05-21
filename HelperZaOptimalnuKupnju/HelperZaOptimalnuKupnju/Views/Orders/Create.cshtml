@@ -73,8 +73,8 @@
 </div>
 
 @section Scripts {
-    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
     <script>
         // Autocomplete za kupce
         const buyerInput = document.getElementById('buyerAutocomplete');
@@ -86,6 +86,7 @@
         buyerInput.addEventListener('input', function() {
             const term = this.value.trim();
             clearTimeout(autocompleteTimeout);
+            console.log('Autocomplete input:', term);
 
             if (term.length < 2) {
                 buyerSuggestions.innerHTML = '';
@@ -93,9 +94,11 @@
             }
 
             autocompleteTimeout = setTimeout(() => {
+                console.log('Slanje zahtjeva za term:', term);
                 fetch(`@Url.Action("AutocompleteBuyers", "Orders")?term=${encodeURIComponent(term)}`)
                     .then(response => response.json())
                     .then(data => {
+                        console.log('Odgovor sa servera:', data);
                         if (data.data && data.data.length > 0) {
                             buyerSuggestions.innerHTML = data.data.map(buyer => `
                                 <li class="suggestion-item" data-id="${buyer.id}">
