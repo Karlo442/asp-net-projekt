@@ -11,8 +11,8 @@ namespace HelperZaOptimalnuKupnju.Models.ViewModels
 
         [Required(ErrorMessage = "Očekivani datum dostave je obavezan")]
         [Display(Name = "Očekivani datum dostave")]
-        public DateTime ExpectedDeliveryDateTime { get; set; }
-
+        public DateTime ExpectedDeliveryDateTime { get; set; } = DateTime.Now;
+        
         [Required(ErrorMessage = "Status je obavezan")]
         [Display(Name = "Status")]
         public OrderStatus Status { get; set; }
