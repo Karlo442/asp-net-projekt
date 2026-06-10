@@ -24,7 +24,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
         {
             var query = _context.Orders
                 .Include(o => o.Buyer)
-                .Include(o => o.Items)
+                .Include(o => o.Items!)
                     .ThenInclude(i => i.Product)
                 .AsQueryable();
 
@@ -76,7 +76,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
         {
             var order = _context.Orders
                 .Include(o => o.Buyer)
-                .Include(o => o.Items)
+                .Include(o => o.Items!)
                     .ThenInclude(i => i.Product)
                 .FirstOrDefault(o => o.Id == id);
 

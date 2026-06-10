@@ -34,4 +34,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+// Mapiranje API kontrolera
+app.MapControllers();
+
 app.Run();
