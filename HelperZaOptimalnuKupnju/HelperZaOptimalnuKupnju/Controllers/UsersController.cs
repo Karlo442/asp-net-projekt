@@ -3,6 +3,7 @@ using System.Linq;
 using HelperZaOptimalnuKupnju.Data;
 using HelperZaOptimalnuKupnju.Models;
 using HelperZaOptimalnuKupnju.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

@@ -3,6 +3,7 @@ using System.Linq;
 using HelperZaOptimalnuKupnju.Data;
 using HelperZaOptimalnuKupnju.Models;
 using HelperZaOptimalnuKupnju.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -86,6 +87,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
 
         [Route("novo")]
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer")]
         public IActionResult Create()
         {
             ViewData["Buyers"] = _context.Users
@@ -99,6 +101,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
         [Route("novo")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Customer")]
         public IActionResult Create(OrderCreateViewModel model)
         {
             if (ModelState.IsValid)
@@ -139,6 +142,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
 
         [Route("uredi/{id:int}")]
         [HttpGet]
+        [Authorize(Roles = "Admin,Customer")]
         public IActionResult Edit(int id)
         {
             var order = _context.Orders.Include(o => o.Buyer).FirstOrDefault(o => o.Id == id);
@@ -165,6 +169,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
         [Route("uredi/{id:int}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Customer")]
         public IActionResult Edit(int id, OrderEditViewModel model)
         {
             if (id != model.Id) return NotFound();
@@ -206,6 +211,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
         [Route("obrisi/{id:int}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var order = _context.Orders.Include(o => o.Items).FirstOrDefault(o => o.Id == id);

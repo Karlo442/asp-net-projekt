@@ -3,6 +3,7 @@ using System.Linq;
 using HelperZaOptimalnuKupnju.Data;
 using HelperZaOptimalnuKupnju.DTOs;
 using HelperZaOptimalnuKupnju.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class ApiOrderItemsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -23,6 +25,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// GET /api/apiOrderItems - Dohvaća sve stavke narudžbi s opcionalnom pretragom
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<OrderItemDTO>>> GetOrderItems(
             [FromQuery] int? orderId = null,
             [FromQuery] int? productId = null,
@@ -83,6 +86,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// GET /api/apiOrderItems/{id} - Dohvaća stavku narudžbe po ID-u
         /// </summary>
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<OrderItemDTO>> GetOrderItem(int id)
         {
             try

@@ -3,6 +3,7 @@ using System.Linq;
 using HelperZaOptimalnuKupnju.Data;
 using HelperZaOptimalnuKupnju.DTOs;
 using HelperZaOptimalnuKupnju.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class ApiUsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -23,6 +25,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// GET /api/apiUsers - Dohvaća sve korisnike s opcionalnom pretragom
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<UserListDTO>>> GetUsers(
             [FromQuery] string? search = "",
             [FromQuery] string? role = null,
@@ -84,6 +87,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// GET /api/apiUsers/{id} - Dohvaća korisnika po ID-u
         /// </summary>
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<UserDTO>> GetUser(int id)
         {
             try

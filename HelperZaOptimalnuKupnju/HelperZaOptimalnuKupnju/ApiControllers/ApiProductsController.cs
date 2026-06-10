@@ -3,6 +3,7 @@ using System.Linq;
 using HelperZaOptimalnuKupnju.Data;
 using HelperZaOptimalnuKupnju.DTOs;
 using HelperZaOptimalnuKupnju.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Supplier")]
     public class ApiProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -23,6 +25,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// GET /api/apiProducts - Dohvata sve proizvode s opcionalnom pretragom
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<ProductListDTO>>> GetProducts(
             [FromQuery] string? search = "",
             [FromQuery] decimal? minPrice = null,
@@ -80,6 +83,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// GET /api/apiProducts/{id} - Dohvaća proizvod po ID-u sa svim detaljima
         /// </summary>
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ProductDTO>> GetProduct(int id)
         {
             try

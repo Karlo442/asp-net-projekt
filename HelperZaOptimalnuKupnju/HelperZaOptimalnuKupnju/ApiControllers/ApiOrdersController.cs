@@ -3,6 +3,7 @@ using System.Linq;
 using HelperZaOptimalnuKupnju.Data;
 using HelperZaOptimalnuKupnju.DTOs;
 using HelperZaOptimalnuKupnju.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// GET /api/apiOrders - Dohvaća sve narudžbe s opcionalnom pretragom
         /// </summary>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<OrderListDTO>>> GetOrders(
             [FromQuery] string? search = "",
             [FromQuery] int? buyerId = null,
@@ -85,6 +87,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// GET /api/apiOrders/{id} - Dohvaća narudžbu po ID-u sa svim detaljima
         /// </summary>
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<OrderDTO>> GetOrder(int id)
         {
             try
@@ -143,6 +146,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// POST /api/apiOrders - Kreira novu narudžbu
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<ActionResult<OrderDTO>> CreateOrder(OrderCreateDTO dto)
         {
             try
@@ -214,6 +218,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// PUT /api/apiOrders/{id} - Ažurira postojeću narudžbu
         /// </summary>
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin,Customer")]
         public async Task<IActionResult> UpdateOrder(int id, OrderEditDTO dto)
         {
             try
@@ -252,6 +257,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
         /// DELETE /api/apiOrders/{id} - Briše narudžbu
         /// </summary>
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             try

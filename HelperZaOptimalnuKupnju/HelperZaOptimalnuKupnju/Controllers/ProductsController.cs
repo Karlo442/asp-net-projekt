@@ -3,6 +3,7 @@ using System.Linq;
 using HelperZaOptimalnuKupnju.Data;
 using HelperZaOptimalnuKupnju.Models;
 using HelperZaOptimalnuKupnju.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,6 +67,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
 
         [Route("novo")]
         [HttpGet]
+        [Authorize(Roles = "Admin,Supplier")]
         public IActionResult Create()
         {
             return View(new ProductCreateViewModel());
@@ -74,6 +76,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
         [Route("novo")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Supplier")]
         public IActionResult Create(ProductCreateViewModel model)
         {
             if (ModelState.IsValid)
@@ -103,6 +106,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
 
         [Route("uredi/{id:int}")]
         [HttpGet]
+        [Authorize(Roles = "Admin,Supplier")]
         public IActionResult Edit(int id)
         {
             var product = _context.Products.Find(id);
@@ -122,6 +126,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
         [Route("uredi/{id:int}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Supplier")]
         public IActionResult Edit(int id, ProductEditViewModel model)
         {
             if (id != model.Id) return NotFound();
@@ -154,6 +159,7 @@ namespace HelperZaOptimalnuKupnju.Controllers
         [Route("obrisi/{id:int}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Supplier")]
         public IActionResult Delete(int id)
         {
             var product = _context.Products.Find(id);

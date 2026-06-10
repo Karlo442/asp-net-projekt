@@ -123,7 +123,7 @@
         }
 
         function deleteUser(id) {
-            fetch(`@Url.Action("Delete", "Users")/${id}`, {
+            fetch(`@Url.Action(action: "obrisi", controller: "korisn")/${id}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
