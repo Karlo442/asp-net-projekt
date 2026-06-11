@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Product Details";
 }
+@Html.AntiForgeryToken()
+
 <div class="page-header">
     <div>
         <p class="eyebrow">Details</p>
@@ -24,4 +26,42 @@
         <h2>Description</h2>
         <p>@Model.Description</p>
     </section>
+    <div class="action-buttons" style="margin-top: 20px; display: flex; gap: 10px;">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Uredi</a>
+        <button class="btn btn-danger delete-btn-detail" data-id="@Model.Id">Obriši</button>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.querySelector('.delete-btn-detail')?.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            if (confirm('Jeste li sigurni da želite obrisati ovaj proizvod?')) {
+                deleteProduct(productId);
+            }
+        });
+
+        function deleteProduct(id) {
+            fetch(`/proizvodi/obrisi/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Proizvod je obrisan.');
+                    window.location.href = '/proizvodi/lista';
+                } else {
+                    return response.text().then(text => {
+                        alert('Greška pri brisanju: ' + text);
+                    });
+                }
+            })
+            .catch(err => {
+                console.error('Greška:', err);
+                alert('Greška pri brisanju: ' + err);
+            });
+        }
+    </script>
+}

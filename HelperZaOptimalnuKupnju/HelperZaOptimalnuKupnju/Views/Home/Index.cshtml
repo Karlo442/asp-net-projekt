@@ -71,3 +71,186 @@
     </div>
 </div>
 
+<!-- Complaints Section -->
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <section class="section-card complaints-section">
+        <h2>Upload žalbe</h2>
+        <p class="muted">Dodaj naslov, opis i datoteku žalbe.</p>
+        
+        <form class="dropzone complaint-dropzone" id="complaintForm" action="/api/complaints" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input type="text" name="title" class="form-control mb-2" placeholder="Naslov žalbe" required>
+                <textarea name="description" class="form-control" rows="3" placeholder="Opis žalbe..." required></textarea>
+            </div>
+            <div class="dz-message needsclick">
+                <span>Prevuci datoteku ovdje ili klikni za odabir</span>
+            </div>
+            <button type="button" id="submitComplaintBtn" class="btn btn-primary mt-3">Pošalji žalbu</button>
+        </form>
+
+        <div id="complaintStatus" class="mt-3"></div>
+
+        <div id="complaintsContainer" class="mt-4">
+            <h3>Uploadane žalbe</h3>
+            <div id="complaintsList" class="complaints-list"></div>
+        </div>
+    </section>
+}
+
+@section Scripts {
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script>
+        Dropzone.autoDiscover = false;
+
+        const complaintForm = document.getElementById('complaintForm');
+        const complaintStatus = document.getElementById('complaintStatus');
+
+        const complaintDropzone = new Dropzone('#complaintForm', {
+            url: '/api/complaints',
+            paramName: "file",
+            maxFilesize: 10,
+            maxFiles: 1,
+            acceptedFiles: ".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            dictRemoveFile: "Ukloni",
+            dictDefaultMessage: "Prevuci datoteku ovdje ili klikni za odabir",
+            init: function () {
+                this.on("maxfilesexceeded", function (file) {
+                    this.removeAllFiles();
+                    this.addFile(file);
+                });
+            }
+        });
+
+        document.getElementById('submitComplaintBtn').addEventListener('click', function () {
+            const title = complaintForm.querySelector('input[name="title"]').value.trim();
+            const description = complaintForm.querySelector('textarea[name="description"]').value.trim();
+
+            if (!title || !description) {
+                showComplaintStatus('Popuni naslov i opis žalbe.', 'danger');
+                return;
+            }
+
+            const queuedFiles = complaintDropzone.getQueuedFiles();
+            submitComplaint(queuedFiles.length > 0 ? queuedFiles[0] : null, title, description);
+        });
+
+        function submitComplaint(file, title, description) {
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            if (file) {
+                formData.append('file', file);
+            }
+
+            showComplaintStatus('Šaljem žalbu...', 'info');
+
+            fetch('/api/complaints', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Upload nije uspio.');
+                }
+                return response.json();
+            })
+            .then(() => {
+                showComplaintStatus('Žalba je uspješno uploadana.', 'success');
+                complaintForm.reset();
+                complaintDropzone.removeAllFiles(true);
+                loadComplaints();
+            })
+            .catch(error => {
+                console.error('Greška:', error);
+                showComplaintStatus(error.message, 'danger');
+            });
+        }
+
+        function loadComplaints() {
+            fetch('/api/complaints')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Popis žalbi nije moguće učitati.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const container = document.getElementById('complaintsList');
+                container.innerHTML = '';
+
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="muted">Još nema uploadanih žalbi.</p>';
+                    return;
+                }
+
+                data.forEach(complaint => {
+                    const card = document.createElement('div');
+                    card.className = 'complaint-card';
+
+                    const body = document.createElement('div');
+                    const title = document.createElement('h5');
+                    const description = document.createElement('p');
+                    const createdAt = document.createElement('small');
+                    const file = document.createElement(complaint.filePath ? 'a' : 'span');
+                    const deleteButton = document.createElement('button');
+
+                    title.textContent = complaint.title;
+                    description.textContent = complaint.description;
+                    createdAt.textContent = `Uploadano: ${new Date(complaint.createdAt).toLocaleString('hr-HR')}`;
+
+                    if (complaint.filePath) {
+                        file.href = `/${complaint.filePath}`;
+                        file.target = '_blank';
+                        file.textContent = complaint.originalFileName || 'Preuzmi datoteku';
+                    } else {
+                        file.className = 'muted';
+                        file.textContent = 'Bez datoteke';
+                    }
+
+                    deleteButton.type = 'button';
+                    deleteButton.className = 'btn btn-sm btn-danger';
+                    deleteButton.textContent = 'Obriši';
+                    deleteButton.addEventListener('click', () => deleteComplaint(complaint.id));
+
+                    body.append(title, description, createdAt, document.createElement('br'), file);
+                    card.append(body, deleteButton);
+                    container.appendChild(card);
+                });
+            })
+            .catch(error => {
+                console.error('Greška:', error);
+                showComplaintStatus(error.message, 'danger');
+            });
+        }
+
+        function deleteComplaint(id) {
+            if (!confirm('Sigurno želiš obrisati ovu žalbu?')) return;
+
+            fetch(`/api/complaints/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Brisanje nije uspjelo.');
+                }
+                showComplaintStatus('Žalba je obrisana.', 'success');
+                loadComplaints();
+            })
+            .catch(error => {
+                console.error('Greška:', error);
+                showComplaintStatus(error.message, 'danger');
+            });
+        }
+
+        function showComplaintStatus(message, type) {
+            complaintStatus.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadComplaints);
+        </script>
+    }
+}

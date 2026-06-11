@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "User Details";
 }
+@Html.AntiForgeryToken()
+
 <div class="page-header">
     <div>
         <p class="eyebrow">Details</p>
@@ -36,8 +38,44 @@
             <p>@(Model.IsActive ? "Active" : "Inactive")</p>
         </div>
     </div>
+    <div class="action-buttons" style="margin-top: 20px; display: flex; gap: 10px;">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Uredi</a>
+        <button class="btn btn-danger delete-btn-detail" data-id="@Model.Id">Obriši</button>
+    </div>
 </div>
 
 @section Scripts {
     <script src="~/js/celebration-animation.js"></script>
+    <script>
+        document.querySelector('.delete-btn-detail')?.addEventListener('click', function() {
+            const userId = this.dataset.id;
+            if (confirm('Jeste li sigurni da želite obrisati ovog korisnika?')) {
+                deleteUser(userId);
+            }
+        });
+
+        function deleteUser(id) {
+            fetch(`/korisn/obrisi/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Korisnik je obrisan.');
+                    window.location.href = '/korisn/lista';
+                } else {
+                    return response.text().then(text => {
+                        alert('Greška pri brisanju: ' + text);
+                    });
+                }
+            })
+            .catch(err => {
+                console.error('Greška:', err);
+                alert('Greška pri brisanju: ' + err);
+            });
+        }
+    </script>
 }
+

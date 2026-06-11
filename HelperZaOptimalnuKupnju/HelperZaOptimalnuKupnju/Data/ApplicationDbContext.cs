@@ -16,6 +16,7 @@ namespace HelperZaOptimalnuKupnju.Data
         public DbSet<OrderItem> OrderItems { get; set; } = null!;
         public DbSet<Product> Products { get; set; } = null!;
         public DbSet<Store> Stores { get; set; } = null!;
+        public DbSet<Complaint> Complaints { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

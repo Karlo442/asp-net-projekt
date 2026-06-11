@@ -41,4 +41,8 @@ appsettings.Development.json
 .DS_Store
 Thumbs.db
 
+# User-uploaded files
+wwwroot/uploads/
+!wwwroot/uploads/.gitkeep
+
 #test1
