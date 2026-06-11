@@ -142,8 +142,15 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
                     return BadRequest(new { message = $"Proizvod sa ID-om {dto.ProductId} nije pronađen" });
                 }
 
+                var order = await _context.Orders.FindAsync(dto.OrderId);
+                if (order == null)
+                {
+                    return BadRequest(new { message = $"Narudžba sa ID-om {dto.OrderId} nije pronađena" });
+                }
+
                 var item = new OrderItem
                 {
+                    OrderId = dto.OrderId,
                     ProductId = dto.ProductId,
                     Quantity = dto.Quantity,
                     UnitPrice = dto.UnitPrice
@@ -155,6 +162,7 @@ namespace HelperZaOptimalnuKupnju.ApiControllers
                 return CreatedAtAction(nameof(GetOrderItem), new { id = item.Id }, new OrderItemDTO
                 {
                     Id = item.Id,
+                    OrderId = item.OrderId,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice

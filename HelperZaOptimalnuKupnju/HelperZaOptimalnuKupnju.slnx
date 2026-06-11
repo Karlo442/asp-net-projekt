@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="HelperZaOptimalnuKupnju/HelperZaOptimalnuKupnju.csproj" />
+  <Project Path="HelperZaOptimalnuKupnju.Tests/HelperZaOptimalnuKupnju.Tests.csproj" />
 </Solution>
