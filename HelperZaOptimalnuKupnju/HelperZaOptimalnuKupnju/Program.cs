@@ -34,6 +34,13 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    });
+
 var app = builder.Build();
 
 // Inicijalizacija rola i admin korisnika
@@ -44,7 +51,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
 
     // Kreiraj role
-    var roles = new[] { "Admin", "Customer", "Supplier" };
+    var roles = new[] { "Admin", "Customer", "Supplier", "Buyer" };
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))

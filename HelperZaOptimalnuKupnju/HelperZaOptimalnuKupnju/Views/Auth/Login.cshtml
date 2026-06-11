@@ -51,6 +51,11 @@
                         <button type="submit" class="btn btn-primary w-100 mb-3">Prijava</button>
                     </form>
 
+                    <form method="post" asp-action="ExternalLogin" class="mb-3">
+                        <input type="hidden" name="provider" value="Google" />
+                        <button type="submit" class="btn btn-secondary w-100">Prijava preko Googlea</button>
+                    </form>
+
                     <p class="text-center mb-0">
                         Nemate račun? <a asp-action="Register">Registracija</a>
                     </p>

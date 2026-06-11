@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using HelperZaOptimalnuKupnju.DTOs;
 using HelperZaOptimalnuKupnju.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -14,15 +15,18 @@ namespace HelperZaOptimalnuKupnju.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<AppRole> _roleManager;
+        private readonly IConfiguration _configuration;
 
         public AuthController(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            RoleManager<AppRole> roleManager)
+            RoleManager<AppRole> roleManager,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -193,6 +197,105 @@ namespace HelperZaOptimalnuKupnju.Controllers
                 ModelState.AddModelError(string.Empty, $"Greška pri prijavi: {ex.Message}");
                 return View(model);
             }
+        }
+
+        [Route("google-prijava")]
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IActionResult ExternalLogin(string provider = "Google", string? returnUrl = null)
+        {
+            if (provider == "Google" &&
+                (string.IsNullOrWhiteSpace(_configuration["Authentication:Google:ClientId"]) ||
+                 string.IsNullOrWhiteSpace(_configuration["Authentication:Google:ClientSecret"])))
+            {
+                ModelState.AddModelError(string.Empty, "Google prijava nije konfigurirana. Provjeri ClientId i ClientSecret u appsettings.json i restartaj aplikaciju.");
+                return View(nameof(Login), new LoginDTO());
+            }
+
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        [Route("google-callback")]
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
+        {
+            if (!string.IsNullOrWhiteSpace(remoteError))
+            {
+                ModelState.AddModelError(string.Empty, $"Google prijava nije uspjela: {remoteError}");
+                return View(nameof(Login), new LoginDTO());
+            }
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ModelState.AddModelError(string.Empty, "Google prijava nije uspjela.");
+                return View(nameof(Login), new LoginDTO());
+            }
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ModelState.AddModelError(string.Empty, "Google račun nema dostupan email.");
+                return View(nameof(Login), new LoginDTO());
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                user = new AppUser
+                {
+                    UserName = email,
+                    Email = email,
+                    FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "Google",
+                    LastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "Korisnik",
+                    Address = "-",
+                    City = "-",
+                    ZipCode = string.Empty,
+                    EmailConfirmed = true,
+                    IsActive = true
+                };
+
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    foreach (var error in createResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
+                    return View(nameof(Login), new LoginDTO());
+                }
+            }
+
+            if (!user.IsActive)
+            {
+                user.IsActive = true;
+                await _userManager.UpdateAsync(user);
+            }
+
+            var logins = await _userManager.GetLoginsAsync(user);
+            if (!logins.Any(login => login.LoginProvider == info.LoginProvider && login.ProviderKey == info.ProviderKey))
+            {
+                await _userManager.AddLoginAsync(user, info);
+            }
+
+            if (!await _userManager.IsInRoleAsync(user, "Buyer"))
+            {
+                await _userManager.AddToRoleAsync(user, "Buyer");
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
+
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         /// <summary>
